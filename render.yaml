@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: aurum-trader-bot
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python test_mt5.py"
