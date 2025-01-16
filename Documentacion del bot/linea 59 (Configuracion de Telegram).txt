@@ -1,0 +1,16 @@
+import asyncio
+from telegram import Bot
+
+TELEGRAM_TOKEN = "7774991841:AAEh3I9s2tC-Qo3rO-H64UO1MANAIYpc4lM"
+CHAT_ID = "6278975175"
+
+async def send_welcome_message():
+    bot = Bot(token=TELEGRAM_TOKEN)
+    try:
+        await bot.send_message(chat_id=CHAT_ID, text="Bienvenida a su bot de inversiones")
+        print("Mensaje enviado correctamente.")
+    except Exception as e:
+        print(f"Error al enviar el mensaje: {e}")
+
+# Llamada a la función asincrónica
+asyncio.run(send_welcome_message())

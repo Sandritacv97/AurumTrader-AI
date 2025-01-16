@@ -1,0 +1,67 @@
+import MetaTrader5 as mt5
+from datetime import datetime
+
+# Inicializar MetaTrader 5
+if not mt5.initialize():
+    print("Error al inicializar MetaTrader 5")
+    print(mt5.last_error())  # Mostrar el error específico
+    exit()
+
+# Función para obtener información financiera de la cuenta
+def obtener_informacion_financiera():
+    # Información de la cuenta
+    cuenta = mt5.account_info()
+    if cuenta is None:
+        print("No se pudo obtener la información de la cuenta.")
+        print("Error:", mt5.last_error())
+        return
+
+    # Mostrar el estado de la cuenta primero
+    print("\n=== Estado de la Cuenta ===")
+    print(f"Estado de la cuenta: {'En trading' if cuenta.trade_allowed else 'Trading deshabilitado'}")
+
+    # Obtener historial de operaciones cerradas
+    fecha_inicio = datetime(2023, 1, 1)  # Fecha de inicio para las operaciones cerradas
+    fecha_fin = datetime.now()  # Fecha actual
+    historial = mt5.history_deals_get(fecha_inicio, fecha_fin)
+    if historial is None:
+        print("No se pudo obtener el historial de operaciones.")
+        print("Error:", mt5.last_error())
+        return
+
+    # Mostrar resultados de la cuenta
+    total_swap = 0.0
+    total_comision = 0.0
+    total_depositos = 0.0
+    total_perdida_o_beneficio = 0.0
+
+    for operacion in historial:
+        total_swap += operacion.swap  # Swap acumulado
+        total_comision += operacion.commission  # Comisión acumulada
+        total_perdida_o_beneficio += operacion.profit  # Beneficio o pérdida acumulado
+
+        # Identificar depósitos y créditos
+        if operacion.type == mt5.DEAL_TYPE_BALANCE or operacion.type == mt5.DEAL_TYPE_CREDIT:
+            total_depositos += operacion.profit  # Solo considerar los depósitos (no ganancias/pérdidas)
+
+    # Cálculos adicionales
+    balance = cuenta.equity - total_depositos  # Cálculo del balance como equidad menos depósito
+
+    # Beneficio/Pérdida total (cerradas): balance - comisión total - swap
+    beneficio_o_perdida_total = balance - total_comision - total_swap
+
+    # Mostrar resultados finales
+    print("\n=== Información Financiera de la Cuenta ===")
+    print(f"Balance (calculado): {balance:.2f}")  # Balance calculado
+    print(f"Equidad: {cuenta.equity:.2f}")  # Equidad
+    print(f"Swap acumulado: {total_swap:.2f}")  # Swap acumulado
+    print(f"Comisiones totales: {total_comision:.2f}")  # Comisión acumulada
+    print(f"Depósitos realizados: {total_depositos:.2f}")  # Depósitos realizados
+    print(f"Beneficio/Pérdida total (cerradas): {beneficio_o_perdida_total:.2f}")  # Beneficio/Pérdida total
+
+# Llamar a la función para obtener la información
+obtener_informacion_financiera()
+
+# Cerrar la conexión
+mt5.shutdown()
+print("\nConexión a MetaTrader 5 cerrada.")

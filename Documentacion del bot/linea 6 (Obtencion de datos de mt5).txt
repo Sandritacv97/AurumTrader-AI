@@ -1,0 +1,27 @@
+import MetaTrader5 as mt5
+from datetime import datetime
+
+# Inicializar MetaTrader 5
+if not mt5.initialize():
+    print("Error al inicializar MetaTrader 5")
+    print(mt5.last_error())  # Mostrar el error específico
+else:
+    print("Conexión a MetaTrader 5 establecida.")
+
+    # Establecer el rango de fechas
+    fecha_inicio = datetime(2023, 1, 1)
+    fecha_fin = datetime.now()
+
+    # Obtener el historial de operaciones cerradas
+    historial = mt5.history_deals_get(fecha_inicio, fecha_fin)
+
+    if historial is None:
+        print("No se encontraron operaciones cerradas.")
+        print("Error:", mt5.last_error())  # Mostrar el error si ocurre
+    else:
+        print(f"Se encontraron {len(historial)} operaciones cerradas:")
+        for op in historial:
+            print(f"Ticket: {op.ticket}, Símbolo: {op.symbol}, Profit: {op.profit}")
+
+    # Cerrar la conexión al final
+    mt5.shutdown()

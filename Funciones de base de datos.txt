@@ -1,0 +1,34 @@
+1. Tablas de Análisis de Gráficas y Velas
+Candlestick Data (Velas):
+
+Campos: Timestamp, Par de divisas, Precio de apertura, Precio de cierre, Máximo, Mínimo, Volumen, Indicadores técnicos calculados (RSI, MACD, etc.).
+Propósito: Almacenar las velas históricas para analizar el comportamiento del mercado y predecir movimientos futuros.
+Patrones de Velas:
+
+Campos: Timestamp, Par de divisas, Patrón identificado (Martillo, Engulfing, etc.), Resultado de la predicción.
+Propósito: Guardar los patrones de velas identificados para entrenamiento y análisis de su efectividad.
+2. Tablas de Noticias
+News Data (Noticias):
+Campos: Timestamp, Título, Descripción, Fuente, Impacto (bajo, medio, alto), Par de divisas relacionado.
+Propósito: Almacenar noticias relevantes que puedan afectar a los mercados, clasificar su impacto y asociarlas a pares de divisas para que el bot pueda aprender cómo las noticias influyen en los movimientos de los mercados.
+3. Tablas de Transacciones y Resultados
+Transaction Data (Transacciones):
+Campos: ID de la transacción, Par de divisas, Tipo de operación (compra/venta), Precio de entrada, Precio de salida, Resultado (ganancia/pérdida), Timestamp.
+Propósito: Guardar todas las operaciones ejecutadas por el bot, para analizar su rentabilidad y mejorar las decisiones futuras.
+4. Tablas de Aprendizaje y Errores
+Learning Data (Datos de Aprendizaje):
+Campos: ID, Tipo de error (predicción fallida, mala interpretación de velas, etc.), Contexto (como los indicadores o noticias que se usaron), Resultado, Timestamp.
+Propósito: Almacenar los errores del bot, las situaciones en las que falló, para luego ajustar el algoritmo y aprender de ellos.
+5. Tablas de Usuarios (Opcional)
+User Settings (Configuraciones de Usuario):
+Campos: ID de usuario, Preferencias de riesgo, Configuración de alertas, Tipos de análisis preferidos, Últimas operaciones.
+Propósito: Personalizar la experiencia del usuario y sus interacciones con el bot.
+Estructura de la Base de Datos:
+Teniendo en cuenta lo anterior, la estructura podría ser algo como:
+
+Velas (candlesticks)
+Patrones (patterns)
+Noticias (news)
+Transacciones (transactions)
+Aprendizaje (learning)
+Usuarios (users)

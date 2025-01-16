@@ -1,0 +1,28 @@
+import MetaTrader5 as mt5
+
+# Inicializar MetaTrader 5
+if not mt5.initialize():
+    print("Error al inicializar MetaTrader 5")
+    print(mt5.last_error())  # Mostrar el error específico
+else:
+    print("Conexión a MetaTrader 5 establecida.")
+
+# Obtener información de la cuenta
+cuenta = mt5.account_info()
+
+if cuenta is None:
+    print("No se pudo obtener la información de la cuenta.")
+    print("Error:", mt5.last_error())  # Mostrar el error si ocurre
+else:
+    print("Información de la cuenta obtenida con éxito:")
+    print(f"ID de la cuenta: {cuenta.login}")
+    print(f"Nombre del servidor: {cuenta.server}")
+    print(f"Saldo: {cuenta.balance}")
+    print(f"Margen disponible: {cuenta.margin_free}")
+    print(f"Equidad: {cuenta.equity}")
+    print(f"Ganancia flotante: {cuenta.profit}")
+    print(f"Nivel de margen: {cuenta.margin_level}")
+    print(f"Estado de la cuenta: {'En trading' if cuenta.trade_allowed else 'Trading deshabilitado'}")
+
+# Cerrar la conexión
+mt5.shutdown()

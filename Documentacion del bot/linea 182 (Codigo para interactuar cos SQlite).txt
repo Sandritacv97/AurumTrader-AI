@@ -1,0 +1,115 @@
+import sqlite3
+from datetime import datetime
+
+# Conectar a la base de datos (se creará si no existe)
+conn = sqlite3.connect('bot_inversiones.db')
+cursor = conn.cursor()
+
+# Función para crear las tablas
+def crear_tablas():
+    # Crear tabla de operaciones
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS operaciones (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        par_divisa TEXT NOT NULL,
+        tipo_operacion TEXT NOT NULL, 
+        tamaño REAL NOT NULL,
+        precio_apertura REAL NOT NULL,
+        precio_cierre REAL NOT NULL,
+        fecha_apertura DATETIME NOT NULL,
+        fecha_cierre DATETIME,
+        beneficio_perdida REAL,
+        comision REAL,
+        swap REAL,
+        estado TEXT NOT NULL
+    )
+    ''')
+
+    # Crear tabla de patrones
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS patrones (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tipo_patron TEXT NOT NULL,
+        par_divisa TEXT NOT NULL,
+        fecha_deteccion DATETIME NOT NULL,
+        detalles TEXT
+    )
+    ''')
+
+    # Crear tabla de configuraciones
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS configuraciones (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        parametro TEXT NOT NULL,
+        valor TEXT NOT NULL
+    )
+    ''')
+
+    # Guardar cambios
+    conn.commit()
+
+# Función para insertar una operación
+def insertar_operacion(par_divisa, tipo_operacion, tamaño, precio_apertura, precio_cierre, fecha_apertura, fecha_cierre, beneficio_perdida, comision, swap, estado):
+    cursor.execute('''
+    INSERT INTO operaciones (par_divisa, tipo_operacion, tamaño, precio_apertura, precio_cierre, fecha_apertura, fecha_cierre, beneficio_perdida, comision, swap, estado)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (par_divisa, tipo_operacion, tamaño, precio_apertura, precio_cierre, fecha_apertura, fecha_cierre, beneficio_perdida, comision, swap, estado))
+    conn.commit()
+
+# Función para insertar un patrón
+def insertar_patron(tipo_patron, par_divisa, detalles):
+    fecha_deteccion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('''
+    INSERT INTO patrones (tipo_patron, par_divisa, fecha_deteccion, detalles)
+    VALUES (?, ?, ?, ?)
+    ''', (tipo_patron, par_divisa, fecha_deteccion, detalles))
+    conn.commit()
+
+# Función para insertar configuración
+def insertar_configuracion(parametro, valor):
+    cursor.execute('''
+    INSERT INTO configuraciones (parametro, valor)
+    VALUES (?, ?)
+    ''', (parametro, valor))
+    conn.commit()
+
+# Función para obtener todas las operaciones cerradas
+def obtener_operaciones_cerradas():
+    cursor.execute('SELECT * FROM operaciones WHERE estado = "cerrada"')
+    return cursor.fetchall()
+
+# Función para obtener los patrones detectados en un par de divisa
+def obtener_patrones(par_divisa):
+    cursor.execute('SELECT * FROM patrones WHERE par_divisa = ?', (par_divisa,))
+    return cursor.fetchall()
+
+# Función para obtener una configuración
+def obtener_configuracion(parametro):
+    cursor.execute('SELECT valor FROM configuraciones WHERE parametro = ?', (parametro,))
+    return cursor.fetchone()
+
+# Crear las tablas si no existen
+crear_tablas()
+
+# Ejemplo de inserción de datos (puedes modificar según lo que necesites)
+insertar_operacion('EURUSD', 'compra', 0.1, 1.1000, 1.1050, '2025-01-13 10:00:00', '2025-01-13 10:30:00', 50.0, 1.2, 0.5, 'cerrada')
+insertar_patron('martillo', 'EURUSD', 'Patrón de martillo detectado en el gráfico.')
+insertar_configuracion('riesgo_maximo', '2%')
+
+# Ejemplo de consulta de datos
+operaciones_cerradas = obtener_operaciones_cerradas()
+print("Operaciones Cerradas:")
+for operacion in operaciones_cerradas:
+    print(operacion)
+
+patrones_detectados = obtener_patrones('EURUSD')
+print("\nPatrones Detectados en EURUSD:")
+for patron in patrones_detectados:
+    print(patron)
+
+configuracion_riesgo = obtener_configuracion('riesgo_maximo')
+print("\nConfiguración de Riesgo Máximo:")
+print(configuracion_riesgo)
+
+# Cerrar la conexión
+conn.close()

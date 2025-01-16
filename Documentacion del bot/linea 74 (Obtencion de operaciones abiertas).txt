@@ -1,0 +1,39 @@
+import MetaTrader5 as mt5
+
+# Inicializar MetaTrader 5
+if not mt5.initialize():
+    print("Error al inicializar MetaTrader 5")
+    print(mt5.last_error())  # Mostrar el error específico
+    exit()  # Salir si no se puede inicializar
+
+# Función para obtener información de las operaciones abiertas
+def obtener_operaciones_abiertas():
+    operaciones = mt5.positions_get()
+    if operaciones is None:
+        print("No se encontraron operaciones abiertas.")
+        print("Error:", mt5.last_error())  # Mostrar el error si ocurre
+        return []
+    elif len(operaciones) > 0:
+        print(f"Se encontraron {len(operaciones)} operaciones abiertas:")
+        for op in operaciones:
+            print(f"""
+            Ticket: {op.ticket}
+            Símbolo: {op.symbol}
+            Volumen: {op.volume}
+            Precio de Apertura: {op.price_open}
+            Stop Loss: {op.sl}
+            Take Profit: {op.tp}
+            Ganancia Flotante: {op.profit}
+            """)
+        return operaciones
+    else:
+        print("No hay operaciones abiertas actualmente.")
+        return []
+
+# Llamar a la función
+print("\n=== Operaciones Abiertas ===")
+operaciones_abiertas = obtener_operaciones_abiertas()
+
+# Cerrar la conexión
+mt5.shutdown()
+print("\nConexión a MetaTrader 5 cerrada.")
